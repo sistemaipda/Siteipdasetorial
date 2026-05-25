@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>IPDA Sistema - Setorial Contagem</title>
+<style>
+
+/* DARK MODE */
+
+body.dark{
+    background:#121212;
+    color:#f1f1f1;
+}
+
+body.dark .topo,
+body.dark .formulario,
+body.dark table,
+body.dark .painel-aniversariantes,
+body.dark .login-container{
+    background:#1e1e1e;
+    color:#f1f1f1;
+    box-shadow:0 2px 10px rgba(0,0,0,0.4);
+}
+
+body.dark input,
+body.dark select{
+    background:#2a2a2a;
+    color:#fff;
+    border:1px solid #444;
+}
+
+body.dark td{
+    border-color:#333;
+}
+
+body.dark label{
+    color:#ccc;
+}
+
+body.dark .topo h2,
+body.dark .nome-clicavel,
+body.dark #saudacao{
+    color:#90caf9;
+}
+
+body.dark .menu{
+    background:#0b1f36;
+}
+
+body.dark .menu a:hover{
+    background:#16385f;
+}
+
+body.dark th{
+    background:#1565c0;
+}
+
+body.dark #ajuda-box{
+    background:#1e1e1e;
+    color:white;
+}
+
+body.dark .painel-aniversariantes{
+    background:#1e1e1e;
+}
+
+body.dark #loading{
+    background:rgba(0,0,0,0.8);
+}
+
+.painel-aniversariantes{
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    margin:20px;
+}
+
+@keyframes girar{
+from{transform:rotate(0deg);}
+to{transform:rotate(360deg);}
+}
+
+.spinner-bars{
+    position:relative;
+    width:70px;
+    height:70px;
+}
+
+.spinner-bars span{
+    position:absolute;
+    width:5px;
+    height:20px;
+    background:#0d47a1;
+    border-radius:10px;
+    top:25px;
+    left:32px;
+    transform-origin:center -22px;
+    animation:fadeBars 1.2s linear infinite;
+}
+
+/* 12 barras */
+.spinner-bars span:nth-child(1){transform:rotate(0deg);animation-delay:0s;}
+.spinner-bars span:nth-child(2){transform:rotate(30deg);animation-delay:0.1s;}
+.spinner-bars span:nth-child(3){transform:rotate(60deg);animation-delay:0.2s;}
+.spinner-bars span:nth-child(4){transform:rotate(90deg);animation-delay:0.3s;}
+.spinner-bars span:nth-child(5){transform:rotate(120deg);animation-delay:0.4s;}
+.spinner-bars span:nth-child(6){transform:rotate(150deg);animation-delay:0.5s;}
+.spinner-bars span:nth-child(7){transform:rotate(180deg);animation-delay:0.6s;}
+.spinner-bars span:nth-child(8){transform:rotate(210deg);animation-delay:0.7s;}
+.spinner-bars span:nth-child(9){transform:rotate(240deg);animation-delay:0.8s;}
+.spinner-bars span:nth-child(10){transform:rotate(270deg);animation-delay:0.9s;}
+.spinner-bars span:nth-child(11){transform:rotate(300deg);animation-delay:1s;}
+.spinner-bars span:nth-child(12){transform:rotate(330deg);animation-delay:1.1s;}
+
+@keyframes fadeBars{
+    0%{opacity:1;}
+    100%{opacity:0.12;}
+}
+
+/* RESET E BODY */
+body{ margin:0; font-family:Arial, sans-serif; background:#f2f4f8; color: #333; }
+
+/* TELA DE LOGIN */
+#login{ display:flex; justify-content:center; align-items:center; height:100vh; }
+.login-container{ background:white; padding:30px 40px; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.2); width:350px; text-align:center; }
+.login-container h2{ color:#0d47a1; margin-bottom:20px; }
+.login-container input{ width:100%; padding:10px; margin:10px 0; border:1px solid #ccc; border-radius:5px; box-sizing:border-box; }
+.login-container button{ width:100%; padding:10px; background:#0d47a1; color:white; border:none; border-radius:5px; cursor:pointer; font-size:16px; }
+
+/* MENU LATERAL */
+#sistema{ display:none; }
+.menu{ width:230px; height:100vh; background:#0d47a1; color:white; position:fixed; overflow-y: auto; z-index: 1000; }
+.menu h2{ text-align:center; padding:20px; font-size: 18px; border-bottom: 1px solid #1565c0; }
+.menu a{ display:block; padding:15px; color:white; text-decoration:none; cursor:pointer; transition: 0.3s; }
+.menu a:hover{ background:#1565c0; padding-left: 25px; }
+.btn-sair-menu { background: #c62828 !important; margin-top: 20px; font-weight: bold; border-top: 1px solid #ff5252; text-align: center; }
+
+/* TOPO */
+.topo{ margin-left:230px; background:white; padding:15px; display:flex; align-items:center; gap:15px; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+.topo img.logo-igreja { height: 65px; width: auto; }
+.topo h2 { font-size: 18px; color: #0d47a1; }
+
+/* CONTEÚDO */
+.conteudo{ margin-left:230px; padding:20px; }
+.formulario{ background:white; padding:20px; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1); display:none; margin-bottom:20px; }
+.grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.campo-grupo { display: flex; flex-direction: column; }
+input, select{ padding:10px; border:1px solid #ccc; border-radius:4px; width: 100%; box-sizing: border-box; }
+label { font-size: 11px; font-weight: bold; color: #555; margin-bottom: 2px; margin-top: 5px; text-transform: uppercase; }
+
+/* STATUS */
+.status-ativo { background: #d4edda; color: #155724; padding: 5px 10px; border-radius: 15px; font-weight: bold; font-size: 12px; border: 1px solid #c3e6cb; }
+.status-desativo { background: #f8d7da; color: #721c24; padding: 5px 10px; border-radius: 15px; font-weight: bold; font-size: 12px; border: 1px solid #f5c6cb; }
+
+/* TABELAS */
+table{ width:100%; background:white; border-collapse:collapse; margin-top:10px; border-radius: 8px; overflow: hidden; }
+th{ background: #0d47a1; color: white; padding: 12px; }
+td{ border:1px solid #eee; padding:10px; text-align:center; }
+.nome-clicavel { color: #0d47a1; font-weight: bold; cursor: pointer; }
+.foto-tabela{ width:45px; height:45px; object-fit:cover; border-radius:50%; background: #eee; }
+.btn-add { background:#1565c0; color:white; border:none; padding:10px 15px; cursor:pointer; border-radius:4px; margin-bottom: 15px; }
+.btn-salvar { background:#2e7d32; color:white; border:none; padding:12px 20px; cursor:pointer; border-radius:4px; font-weight: bold; width: 100%; margin-top: 10px;}
+.btn-excluir { background: #c62828; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; }
+</style>
+<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
+
+
+
+<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+</head>
+<body>
+
+<div id="login">
+  <div class="login-container">
+    <h2>IPDA Contagem Centro Sistema</h2>
+    <input type="email" id="usuario" placeholder="Email">
+    <input type="password" id="senha" placeholder="Senha">
+    <button onclick="logar()">Entrar</button>
+    <div id="erro" style="color:red; margin-top:10px; font-weight:bold;"></div>
+  </div>
+</div>
+
+<div id="sistema">
+  <div class="menu">
+    <h2>SISTEMA IPDA</h2>
+    <a onclick="mostrarTela('membros')">Membros</a>
+    <a onclick="mostrarTela('igrejas')">Igrejas</a>
+    <a onclick="mostrarTela('professores')">Professores / Pastores</a>
+    <a onclick="mostrarTela('departamentos')">Departamentos</a>
+    <a onclick="mostrarTela('eventos')">Eventos</a>
+<a onclick="mostrarTela('aniversariantes')">Aniversariantes</a>
+<a onclick="mostrarTela('alterarLogin')">Alterar Senha</a>
+    <a onclick="sair()" class="btn-sair-menu">SAIR</a>
+  </div>
+
+  <div class="topo">
+<img id="logo-igreja" src="" class="logo-igreja" onclick="clicarLogo()" style="cursor:default;">
+<input type="file" id="logo-input" accept="image/*" onchange="trocarLogo(event)" style="display:none;">
+    <div>
+  <h2 id="titulo-setorial" style="margin:0;">Setorial Contagem Centro</h2>
+  <span style="font-size:12px; color:#555;">Tovs 11789</span>
+</div>
+  <div style="margin-left:auto; display:flex; flex-direction:column; align-items:flex-end;">
+  
+  <span id="saudacao" style="font-weight:bold; color: #0d47a1;"></span>
+
+  <span onclick="abrirAjuda()" style="
+    cursor:pointer;
+    color:black;
+    font-size:12px;
+    margin-top:3px;
+  ">
+    ? Ajuda
+  </span>
+
+  <button onclick="alternarDarkMode()" id="btn-dark" style="
+    padding:6px 12px;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+    background:#0d47a1;
+    color:white;
+    font-size:12px;
+    margin-top:8px;
+  ">
+    🌙 Dark Mode
+  </button>
+
+</div>
+
+<div id="ajuda-box" style="
+  display:none;
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%, -50%);
+  width:90%;
+  max-width:500px;
+  background:white;
+  padding:20px;
+  border-radius:10px;
+  box-shadow:0 5px 20px rgba(0,0,0,0.3);
+  z-index:2000;
+">
+  <h3 style="color:#0d47a1;">Ajuda do Sistema</h3>
+
+  <p><b>Membros:</b> Clique em "Adicionar Membro" para cadastrar. Clique no nome para editar.</p>
+  <p><b>Igrejas:</b> Cadastre as igrejas e seus pastores.</p>
+  <p><b>Professores/Pastores:</b> Cadastre líderes e responsáveis.</p>
+  <p><b>Departamentos:</b> Organize os setores da igreja.</p>
+  <p><b>Eventos:</b> Registre eventos e datas importantes.</p>
+  <p><b>Dica:</b> Sempre clique no nome para editar informações.</p>
+
+  <button onclick="fecharAjuda()" style="
+    margin-top:15px;
+    padding:8px 15px;
+    background:#c62828;
+    color:white;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+  ">
+    Fechar
+  </button>
+</div>
+
+</div>
+
+  <div class="conteudo">
+    <div id="membros-tela" class="tela">
+      <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px;">
+
+  <button class="btn-add" onclick="abrirForm('membros')" style="margin-bottom:0;">
+    Adicionar Membro
+  </button>
+
+  <button class="btn-add" onclick="gerarPDFMembros()" style="margin-bottom:0;">
+    Gerar PDF
+  </button>
+
+  <div style="position:relative; display:flex; align-items:center;">
+    <input
+      type="text"
+      id="busca-membro"
+      placeholder="Pesquisar membro..."
+      onkeyup="filtrarMembros()"
+      style="width:250px; padding-left:30px;"
+    >
+    <span style="position:absolute; left:10px; color:#888;">🔍</span>
+  </div>
+
+</div>
+      <form class="formulario" id="formulario-membros">
+        <h3>Cadastro de Membro</h3>
+        <div class="grid-form">
+            <div class="campo-grupo"><label>Nome</label><input id="m-nome"></div>
+            <div class="campo-grupo"><label>Rua/Avenida</label><input id="m-rua"></div>
+            <div class="campo-grupo"><label>Nº Casa</label><input id="m-numero"></div>
+            <div class="campo-grupo"><label>Bairro</label><input id="m-bairro"></div>
+            <div class="campo-grupo"><label>Cidade</label><input id="m-cidade"></div>
+            <div class="campo-grupo"><label>UF</label><input id="m-uf"></div>
+            <div class="campo-grupo"><label>Data Nascimento</label><input type="date" id="m-nasc"></div>
+            <div class="campo-grupo"><label>Lugar Nasc.</label><input id="m-lugar"></div>
+            <div class="campo-grupo"><label>Data Batismo</label><input type="date" id="m-batismo"></div>
+            <div class="campo-grupo"><label>Estado Civil</label><input id="m-civil"></div>
+            <div class="campo-grupo"><label>RG</label><input id="m-rg"></div>
+            <div class="campo-grupo"><label>CPF</label><input id="m-cpf"></div>
+            <div class="campo-grupo"><label>Mãe</label><input id="m-mae"></div>
+            <div class="campo-grupo"><label>Pai</label><input id="m-pai"></div>
+            <div class="campo-grupo"><label>Celular</label><input id="m-celular"></div>
+            <div class="campo-grupo"><label>Status</label>
+                <select id="m-status">
+                    <option value="Ativo">Ativo</option>
+                    <option value="Desativo">Desativo</option>
+                </select>
+            </div>
+            <div class="campo-grupo"><label>Função Ministerial</label><input id="m-funcao"></div>
+<div class="campo-grupo"><label>Foto</label><input type="file" id="m-foto"></div>
+        </div>
+        <button type="button" class="btn-salvar" onclick="salvar('membros')">Salvar Membro</button>
+      </form>
+      <table><thead><tr><th>Foto</th><th>Nome</th><th>Função</th><th>Celular</th><th>Status</th><th>Ação</th></tr></thead><tbody id="tabela-membros"></tbody></table>
+    </div>
+
+    <div id="igrejas-tela" class="tela" style="display:none">
+        <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px;">
+
+  <button class="btn-add" onclick="abrirForm('igrejas')" style="margin-bottom:0;">
+    Adicionar Igreja
+  </button>
+
+  <div style="position:relative; display:flex; align-items:center;">
+    <input
+      type="text"
+      id="busca-igreja"
+      placeholder="Pesquisar igreja..."
+      onkeyup="filtrarIgrejas()"
+      style="width:250px; padding-left:30px;"
+    >
+    <span style="position:absolute; left:10px; color:#888;">🔍</span>
+  </div>
+
+</div>
+        <form class="formulario" id="formulario-igrejas">
+          <div class="grid-form">
+            <div class="campo-grupo"><label>Nome da IPDA</label><input id="i-nome"></div>
+            <div class="campo-grupo"><label>Pastor</label><input id="i-pastor"></div>
+            <div class="campo-grupo"><label>Telefone do Pastor</label><input id="i-tel-pastor"></div>
+            <div class="campo-grupo"><label>CEP</label><input id="i-cep"></div>
+            <div class="campo-grupo">
+  <label>Bairro</label>
+  <input id="i-bairro" readonly style="background:#e9ecef; color:#555; cursor:not-allowed;">
+</div>
+
+<div class="campo-grupo">
+  <label>Endereço Completo</label>
+  <input id="i-endereco" readonly style="background:#e9ecef; color:#555; cursor:not-allowed;">
+</div>
+<div class="campo-grupo"><label>Número</label><input id="i-numero"></div>
+           <div class="campo-grupo"><label>Porte da Igreja</label><input id="i-porte"></div>
+          <div class="campo-grupo"><label>Código da Igreja</label><input id="i-codigo"></div>
+          <div class="campo-grupo"><label>Quantidade de Membros</label><input id="i-qtd-membros"></div>
+          <div class="campo-grupo"><label>Quantidade de Jovens</label><input id="i-qtd-jovens"></div>
+          <div class="campo-grupo"><label>Metragem da Igreja</label><input id="i-metragem"></div>
+
+          <div class="campo-grupo"><label>Departamentos da Igreja</label><input id="i-departamentos"></div>
+
+          <div class="campo-grupo"><label>Data que o Dirigente Assumiu</label><input type="date" id="i-dirigente-data"></div>
+
+          <div class="campo-grupo"><label>Nome Completo da Financeira</label><input id="i-financeira-nome"></div>
+          <div class="campo-grupo"><label>Telefone da Financeira</label><input id="i-financeira-tel"></div>
+          <div class="campo-grupo"><label>Data que a Financeira Assumiu</label><input type="date" id="i-financeira-data"></div>
+ 
+          <div class="campo-grupo"><label>Email do Pastor</label><input id="i-email-pastor"></div>
+          <div class="campo-grupo"><label>Email da Financeira</label><input id="i-email-financeira"></div>
+
+          <div class="campo-grupo"><label>Distância Casa x Igreja</label><input id="i-distancia"></div>
+          </div>
+          <button type="button" class="btn-salvar" onclick="salvar('igrejas')">Salvar Igreja</button>
+        </form>
+        <table><thead><tr><th>Nome</th><th>Pastor</th><th>Bairro</th><th>Ação</th></tr></thead><tbody id="tabela-igrejas"></tbody></table>
+    </div>
+
+    <div id="professores-tela" class="tela" style="display:none">
+        <button class="btn-add" onclick="abrirForm('professores')">Adicionar Professor/Pastor</button>
+        <form class="formulario" id="formulario-professores">
+          <input placeholder="Nome" id="p-nome">
+          <input placeholder="Função" id="p-funcao">
+          <input placeholder="Telefone Responsável" id="p-tel">
+          <button type="button" class="btn-salvar" onclick="salvar('professores')">Salvar</button>
+        </form>
+        <table><thead><tr><th>Nome</th><th>Função</th><th>Telefone</th><th>Ação</th></tr></thead><tbody id="tabela-professores"></tbody></table>
+    </div>
+
+    <div id="departamentos-tela" class="tela" style="display:none">
+        <button class="btn-add" onclick="abrirForm('departamentos')">Adicionar Departamento</button>
+        <form class="formulario" id="formulario-departamentos">
+          <input placeholder="Nome" id="d-nome">
+          <input placeholder="Responsável" id="d-lider">
+          <input placeholder="Telefone Responsável" id="d-tel">
+          <button type="button" class="btn-salvar" onclick="salvar('departamentos')">Salvar</button>
+        </form>
+        <table><thead><tr><th>Departamento</th><th>Líder</th><th>Telefone</th><th>Ação</th></tr></thead><tbody id="tabela-departamentos"></tbody></table>
+    </div>
+
+    <div id="eventos-tela" class="tela" style="display:none">
+        <button class="btn-add" onclick="abrirForm('eventos')">Adicionar Evento</button>
+        <form class="formulario" id="formulario-eventos">
+          <input placeholder="Evento" id="e-nome">
+          <input type="date" id="e-data">
+          <input placeholder="Telefone Responsável" id="e-tel">
+          <button type="button" class="btn-salvar" onclick="salvar('eventos')">Salvar</button>
+        </form>
+        <table><thead><tr><th>Evento</th><th>Data</th><th>Telefone</th><th>Ação</th></tr></thead><tbody id="tabela-eventos"></tbody></table>
+    </div>
+
+<div id="aniversariantes-tela" class="tela" style="display:none">
+  <div class="painel-aniversariantes">
+    <h3 id="titulo-aniversariantes">Aniversariantes do mês</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Dia</th>
+        </tr>
+      </thead>
+      <tbody id="tabela-aniversariantes"></tbody>
+    </table>
+  </div>
+</div>
+
+    <div id="alterarLogin-tela" class="tela" style="display:none">
+      <div class="formulario" style="display:block">
+        <h3>Alterar Senha</h3>
+        <input id="alt-usuario" placeholder="Confirmar Nome de Usuário">
+        <input type="password" id="alt-senha-antiga" placeholder="Senha Atual">
+        <input type="password" id="alt-senha-nova" placeholder="Nova Senha">
+        <br><br>
+        <button class="btn-salvar" onclick="aplicarSenha()">Validar e Alterar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+// --- CONFIGURAÇÃO FIREBASE ---
+const firebaseConfig = {
+  apiKey: "AIzaSyC5Ylv9RyBfZ3BN5IgDWGqrldQR9yIbFRA",
+  authDomain: "ipda-setorial-contagem.firebaseapp.com",
+  databaseURL: "https://ipda-setorial-contagem-default-rtdb.firebaseio.com",
+  projectId: "ipda-setorial-contagem",
+  storageBucket: "ipda-setorial-contagem.appspot.com",
+  messagingSenderId: "815344482867",
+  appId: "1:815344482867:web:221f5624f89c1e25468146"
+};
+
+// Inicialização Única
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const auth = firebase.auth();
+
+auth.onAuthStateChanged((user) => {
+
+    if(user){
+   
+carregarDadosGlobais();
+carregarLogoGlobal();
+
+        const saudacoes = {
+            "rafael@ipda.com": "Olá, Pr. Rafael Gomes",
+            "marden@ipda.com": "Olá, Pb. Marden Santana",
+            "odezildo@ipda.com": "Olá, Pr. Odezildo Santos",
+            "damiao@ipda.com": "Olá, Coop. Damião Rodrigo"
+        };
+
+        document.getElementById("login").style.display = "none";
+        document.getElementById("sistema").style.display = "block";
+
+        document.getElementById("saudacao").textContent =
+            saudacoes[user.email] || ("Olá, " + user.email);
+
+        mostrarTela('membros');
+    }
+
+});
+
+// Variáveis Globais (Sem duplicidade)
+let usuarios = [];
+let dados = { membros: [], igrejas: [], professores: [], departamentos: [], eventos: [] };
+let editIdx = -1;
+
+// --- CARREGAMENTO DE DADOS ---
+function carregarDadosGlobais() {
+    // Sincroniza Usuários
+    db.ref('usuarios').on('value', (snapshot) => {
+        usuarios = snapshot.val() || listaPadrao;
+        if (!snapshot.val()) db.ref('usuarios').set(listaPadrao);
+    });
+
+    // Sincroniza Categorias
+    const categorias = ['membros', 'igrejas', 'professores', 'departamentos', 'eventos'];
+    categorias.forEach(tipo => {
+        db.ref(tipo).on('value', (snapshot) => {
+    dados[tipo] = snapshot.val() || [];
+    ordenar(tipo);
+    atualizarTabela(tipo);
+
+    if(tipo === 'membros') atualizarTituloMembros();
+        });
+    });
+}
+
+// --- SISTEMA DE LOGIN ---
+function logar() {
+
+  const email = document.getElementById("usuario").value.trim();
+  const senha = document.getElementById("senha").value.trim();
+
+  auth.signInWithEmailAndPassword(email, senha)
+    .then((userCredential) => {
+
+      const usuario = userCredential.user;
+
+      document.getElementById("login").style.display = "none";
+      document.getElementById("sistema").style.display = "block";
+
+      const saudacoes = {
+    "rafael@ipda.com": "Olá, Pr. Rafael Gomes",
+    "marden@ipda.com": "Olá, Pb. Marden Santana",
+    "odezildo@ipda.com": "Olá, Pr. Odezildo Santos",
+    "damiao@ipda.com": "Olá, Coop. Damião Rodrigo"
+};
+
+document.getElementById("saudacao").textContent =
+    saudacoes[usuario.email] || ("Olá, " + usuario.email);
+
+      mostrarTela('membros');
+
+    })
+    .catch((error) => {
+
+      document.getElementById("erro").textContent =
+        "Email ou senha inválidos";
+
+      console.error(error);
+
+    });
+}
+
+function saudacaoPersonalizada(n) {
+    const cargos = {
+        "Marden Santana": "Pb. Marden Santana",
+        "Rafael Gomes": "Pr. Rafael Gomes",
+        "Odezildo Santos": "Pr. Odezildo Santos",
+        "Damião Rodrigo": "Coop. Damião Rodrigo"
+    };
+    return "Olá, " + (cargos[n] || n);
+}
+
+// --- NAVEGAÇÃO ---
+function mostrarTela(t) {
+  document.querySelectorAll('.tela').forEach(x => x.style.display = 'none');
+
+  const tela = document.getElementById(t + "-tela");
+  if(tela) tela.style.display = 'block';
+
+  if(t === "aniversariantes"){
+      atualizarAniversariantes();
+  }
+
+  fecharForm();
+}
+
+function abrirForm(t) {
+
+  if(editIdx === -1)
+    document.getElementById("formulario-" + t).reset();
+
+  if(t === 'membros') {
+    document.getElementById("m-foto").value = "";
+  }
+
+  let form = document.getElementById("formulario-" + t);
+
+  form.style.display = "block";
+
+  form.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}
+
+function fecharForm() {
+  document.querySelectorAll('.formulario').forEach(f => {
+      if(f.parentElement.id !== "alterarLogin-tela") f.style.display = 'none';
+  });
+}
+
+function ordenar(tipo) {
+    dados[tipo].sort((a, b) => (a.nome || "").localeCompare(b.nome || ""));
+}
+
+// --- CRUD (SALVAR E GRAVAR) ---
+function salvar(tipo) {
+    let obj = {};
+    if(tipo === 'membros') {
+        const f = document.getElementById("m-foto").files[0];
+        let mData = {
+            nome: document.getElementById("m-nome").value, rua: document.getElementById("m-rua").value,
+            funcao: document.getElementById("m-funcao").value,
+            num: document.getElementById("m-numero").value, bairro: document.getElementById("m-bairro").value,
+            cidade: document.getElementById("m-cidade").value, uf: document.getElementById("m-uf").value,
+            nasc: document.getElementById("m-nasc").value, lugar: document.getElementById("m-lugar").value,
+            batismo: document.getElementById("m-batismo").value, civil: document.getElementById("m-civil").value,
+            rg: document.getElementById("m-rg").value, cpf: document.getElementById("m-cpf").value,
+            mae: document.getElementById("m-mae").value, pai: document.getElementById("m-pai").value,
+            celular: document.getElementById("m-celular").value, status: document.getElementById("m-status").value,
+            foto: (editIdx > -1 && dados.membros[editIdx].foto) ? dados.membros[editIdx].foto : ""
+        };
+        if(f) {
+    reduzirImagem(f, function(imgReduzida){
+        mData.foto = imgReduzida;
+        gravar(tipo, mData);
+    });
+    return;
+}
+        obj = mData;
+    } else if(tipo === 'igrejas') {
+    obj = {
+        nome: document.getElementById("i-nome").value,
+        pastor: document.getElementById("i-pastor").value,
+        telPastor: document.getElementById("i-tel-pastor").value,
+        cep: document.getElementById("i-cep").value,
+        bairro: document.getElementById("i-bairro").value,
+        endereco: document.getElementById("i-endereco").value,
+        numero: document.getElementById("i-numero").value,
+
+        porte: document.getElementById("i-porte").value,
+        codigo: document.getElementById("i-codigo").value,
+        qtdMembros: document.getElementById("i-qtd-membros").value,
+        qtdJovens: document.getElementById("i-qtd-jovens").value,
+        metragem: document.getElementById("i-metragem").value,
+        departamentos: document.getElementById("i-departamentos").value,
+
+        dirigenteData: document.getElementById("i-dirigente-data").value,
+
+        financeiraNome: document.getElementById("i-financeira-nome").value,
+        financeiraTel: document.getElementById("i-financeira-tel").value,
+        financeiraData: document.getElementById("i-financeira-data").value,
+
+        emailPastor: document.getElementById("i-email-pastor").value,
+        emailFinanceira: document.getElementById("i-email-financeira").value,
+
+        distancia: document.getElementById("i-distancia").value
+        };
+
+    } else if(tipo === 'professores') {
+        obj = {nome: document.getElementById("p-nome").value, funcao: document.getElementById("p-funcao").value, tel: document.getElementById("p-tel").value};
+    } else if(tipo === 'departamentos') {
+        obj = {nome: document.getElementById("d-nome").value, lider: document.getElementById("d-lider").value, tel: document.getElementById("d-tel").value};
+    } else if(tipo === 'eventos') {
+        obj = {nome: document.getElementById("e-nome").value, data: document.getElementById("e-data").value, tel: document.getElementById("e-tel").value};
+    }
+    gravar(tipo, obj);
+}
+
+function gravar(tipo, obj){
+
+    mostrarLoading();
+
+    const inicio = Date.now();
+
+    const finalizar = () => {
+        const tempoMinimo = 500; // meio segundo
+        const passou = Date.now() - inicio;
+        const espera = Math.max(0, tempoMinimo - passou);
+
+        setTimeout(() => {
+            fecharForm();
+            editIdx = -1;
+            esconderLoading();
+        }, espera);
+    };
+
+    if(editIdx > -1){
+
+        db.ref(tipo + "/" + editIdx).set(obj)
+        .then(finalizar)
+        .catch(() => {
+            esconderLoading();
+            alert("Erro ao salvar.");
+        });
+
+    } else {
+
+        dados[tipo].push(obj);
+        let novoIdx = dados[tipo].length - 1;
+
+        db.ref(tipo + "/" + novoIdx).set(obj)
+        .then(finalizar)
+        .catch(() => {
+            esconderLoading();
+            alert("Erro ao salvar.");
+        });
+
+    }
+}
+
+function editar(tipo, idx) {
+    editIdx = idx;
+    let item = dados[tipo][idx];
+    abrirForm(tipo);
+    if(tipo === 'membros') {
+      document.getElementById("m-nome").value = item.nome;
+document.getElementById("m-rua").value = item.rua;
+document.getElementById("m-foto").value = "";
+document.getElementById("m-funcao").value = item.funcao || "";
+document.getElementById("m-numero").value = item.num;
+document.getElementById("m-bairro").value = item.bairro;
+document.getElementById("m-cidade").value = item.cidade;
+document.getElementById("m-uf").value = item.uf;
+document.getElementById("m-nasc").value = item.nasc;
+document.getElementById("m-lugar").value = item.lugar;
+document.getElementById("m-batismo").value = item.batismo;
+document.getElementById("m-civil").value = item.civil;
+
+document.getElementById("m-rg").value = mascaraRG(item.rg || "");
+document.getElementById("m-cpf").value = mascaraCPF(item.cpf || "");
+
+document.getElementById("m-mae").value = item.mae;
+document.getElementById("m-pai").value = item.pai;
+
+document.getElementById("m-celular").value = mascaraTelefone(item.celular || "");
+
+document.getElementById("m-status").value = item.status;
+    } else if(tipo === 'igrejas') {
+        document.getElementById("i-nome").value = item.nome; document.getElementById("i-pastor").value = item.pastor;
+        document.getElementById("i-tel-pastor").value = item.telPastor || ""; document.getElementById("i-cep").value = item.cep || "";
+        document.getElementById("i-bairro").value = item.bairro || ""; document.getElementById("i-endereco").value = item.endereco;
+        document.getElementById("i-numero").value = item.numero || "";
+        document.getElementById("i-porte").value = item.porte || "";
+        document.getElementById("i-codigo").value = item.codigo || "";
+        document.getElementById("i-qtd-membros").value = item.qtdMembros || "";
+        document.getElementById("i-qtd-jovens").value = item.qtdJovens || "";
+        document.getElementById("i-metragem").value = item.metragem || "";
+        document.getElementById("i-departamentos").value = item.departamentos || "";
+
+        document.getElementById("i-dirigente-data").value = item.dirigenteData || "";
+
+        document.getElementById("i-financeira-nome").value = item.financeiraNome || "";
+        document.getElementById("i-financeira-tel").value = item.financeiraTel || "";
+        document.getElementById("i-financeira-data").value = item.financeiraData || "";
+
+        document.getElementById("i-email-pastor").value = item.emailPastor || "";
+        document.getElementById("i-email-financeira").value = item.emailFinanceira || "";
+
+        document.getElementById("i-distancia").value = item.distancia || "";
+    } else if(tipo === 'professores') {
+        document.getElementById("p-nome").value = item.nome; document.getElementById("p-funcao").value = item.funcao; document.getElementById("p-tel").value = item.tel;
+    } else if(tipo === 'departamentos') {
+        document.getElementById("d-nome").value = item.nome; document.getElementById("d-lider").value = item.lider; document.getElementById("d-tel").value = item.tel;
+    } else if(tipo === 'eventos') {
+        document.getElementById("e-nome").value = item.nome; document.getElementById("e-data").value = item.data; document.getElementById("e-tel").value = item.tel;
+    }
+}
+
+function atualizarTabela(tipo) {
+
+    mostrarLoading();
+
+    setTimeout(() => {
+
+        let corpo = document.getElementById("tabela-" + tipo);
+
+        if(!corpo){
+            esconderLoading();
+            return;
+        }
+
+        corpo.innerHTML = "";
+
+        dados[tipo].forEach((item, idx) => {
+
+            let linha = "<tr>";
+            let acao = `<td><button class="btn-excluir" onclick="excluirItem('${tipo}', ${idx})">Excluir</button></td>`;
+
+            if(tipo === 'membros') {
+
+                let classeStatus = item.status === 'Ativo'
+                    ? 'status-ativo'
+                    : 'status-desativo';
+
+                linha += `
+                <td><img src="${item.foto || 'https://via.placeholder.com/45'}" class="foto-tabela"></td>
+                <td class="nome-clicavel" onclick="editar('membros', ${idx})">${item.nome}</td>
+                <td>${item.funcao || ""}</td>
+                <td>
+  <a href="https://wa.me/55${(item.celular || '').replace(/\D/g,'')}"
+     target="_blank"
+     style="color:#0d47a1; font-weight:bold; text-decoration:none;">
+     ${item.celular}
+  </a>
+</td>
+                <td><span class="${classeStatus}">${item.status}</span></td>
+                ${acao}`;
+
+            } else if(tipo === 'igrejas') {
+
+                linha += `
+                <td class="nome-clicavel" onclick="editar('igrejas', ${idx})">${item.nome}</td>
+                <td>${item.pastor}</td>
+                <td>${item.bairro || ""}</td>
+                ${acao}`;
+
+            } else if(tipo === 'professores') {
+
+                linha += `
+                <td class="nome-clicavel" onclick="editar('professores', ${idx})">${item.nome}</td>
+                <td>${item.funcao}</td>
+                <td>${item.tel || ''}</td>
+                ${acao}`;
+
+            } else if(tipo === 'departamentos') {
+
+                linha += `
+                <td class="nome-clicavel" onclick="editar('departamentos', ${idx})">${item.nome}</td>
+                <td>${item.lider}</td>
+                <td>${item.tel || ''}</td>
+                ${acao}`;
+
+            } else if(tipo === 'eventos') {
+
+                linha += `
+                <td class="nome-clicavel" onclick="editar('eventos', ${idx})">${item.nome}</td>
+                <td>${item.data}</td>
+                <td>${item.tel || ''}</td>
+                ${acao}`;
+            }
+
+            corpo.innerHTML += linha + "</tr>";
+        });
+
+        esconderLoading();
+
+    }, 50);
+
+}
+
+function excluirItem(tipo, idx) {
+    if(confirm("Deseja realmente excluir?")) { 
+        dados[tipo].splice(idx, 1); 
+        db.ref(tipo).set(dados[tipo]); 
+    }
+}
+
+function filtrarMembros() {
+    let filtro = document.getElementById("busca-membro").value.toLowerCase();
+    let linhas = document.querySelectorAll("#tabela-membros tr");
+    linhas.forEach(l => {
+        let n = l.cells[1].textContent.toLowerCase();
+        l.style.display = n.includes(filtro) ? "" : "none";
+    });
+}
+
+function aplicarSenha() {
+
+    let usuarioDigitado = document.getElementById("alt-usuario").value.trim();
+    let senhaAtual = document.getElementById("alt-senha-antiga").value.trim();
+    let novaSenha = document.getElementById("alt-senha-nova").value.trim();
+
+    let user = auth.currentUser;
+
+    if (!user) {
+        alert("Usuário não está logado.");
+        return;
+    }
+
+    if (usuarioDigitado !== user.email) {
+        alert("O usuário informado não corresponde ao usuário logado.");
+        return;
+    }
+
+    let credencial = firebase.auth.EmailAuthProvider.credential(
+        user.email,
+        senhaAtual
+    );
+
+    user.reauthenticateWithCredential(credencial)
+    .then(() => user.updatePassword(novaSenha))
+    .then(() => {
+        alert("Senha alterada com sucesso!");
+        sair();
+    })
+    .catch((erro) => {
+        alert("Erro: " + erro.message);
+    });
+}
+
+function atualizarTituloMembros() {
+    if(!dados.membros) return;
+
+    let total = dados.membros.length;
+    let el = document.getElementById("titulo-setorial");
+
+    if(el){
+        el.innerHTML = `
+            Setorial Contagem Centro 
+            <span style="margin-left:10px; font-size:14px; color:#555;">
+                Quant. de Membros:
+            </span>
+            <span style="
+                background:#fff;
+                color:#000;
+                font-weight:300;
+                padding:3px 10px;
+                border-radius:6px;
+                margin-left:6px;
+                border:1px solid #ddd;
+                font-size:14px;
+            ">
+                ${total}
+            </span>
+        `;
+    }
+}
+
+function clicarLogo(){
+}
+
+function trocarLogo(event){
+
+    const file = event.target.files[0];
+    if(!file) return;
+
+    mostrarLoading();
+
+    const reader = new FileReader();
+
+    reader.onload = function(e){
+
+        const base64 = e.target.result;
+
+        db.ref("config/logo").set(base64).then(() => {
+
+            document.getElementById("logo-igreja").src = base64;
+
+            esconderLoading();
+
+            alert("Logo salva com sucesso!");
+
+        }).catch(() => {
+            esconderLoading();
+            alert("Erro ao salvar logo.");
+        });
+
+    };
+
+    reader.readAsDataURL(file);
+}
+
+function abrirAjuda() {
+  document.getElementById("ajuda-box").style.display = "block";
+}
+
+function fecharAjuda() {
+  document.getElementById("ajuda-box").style.display = "none";
+}
+
+function mostrarLoading(){
+    document.getElementById("loading").style.display = "flex";
+}
+
+function esconderLoading(){
+    document.getElementById("loading").style.display = "none";
+}
+
+function carregarLogoGlobal(){
+
+    db.ref("config/logo").on("value", snapshot => {
+
+        let logo = snapshot.val();
+
+        if(logo){
+
+            let img = document.querySelector(".logo-igreja");
+
+            if(img){
+                img.src = logo;
+            }
+
+        }
+
+    });
+
+}
+
+function reduzirImagem(file, callback){
+  const reader = new FileReader();
+
+  reader.onload = function(e){
+    const img = new Image();
+
+    img.onload = function(){
+      const canvas = document.createElement("canvas");
+      const max = 300;
+
+      let w = img.width;
+      let h = img.height;
+
+      if(w > h){
+        if(w > max){
+          h *= max / w;
+          w = max;
+        }
+      } else {
+        if(h > max){
+          w *= max / h;
+          h = max;
+        }
+      }
+
+      canvas.width = w;
+      canvas.height = h;
+
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img,0,0,w,h);
+
+      callback(canvas.toDataURL("image/jpeg",0.7));
+    }
+
+    img.src = e.target.result;
+  }
+
+  reader.readAsDataURL(file);
+}
+
+function mascaraCPF(valor){
+    valor = valor.replace(/\D/g,'');
+    valor = valor.replace(/(\d{3})(\d)/,'$1.$2');
+    valor = valor.replace(/(\d{3})(\d)/,'$1.$2');
+    valor = valor.replace(/(\d{3})(\d{1,2})$/,'$1-$2');
+    return valor;
+}
+
+function mascaraTelefone(valor){
+    valor = valor.replace(/\D/g,'');
+    valor = valor.replace(/(\d{2})(\d)/,'($1) $2');
+    valor = valor.replace(/(\d{5})(\d{4})$/,'$1-$2');
+    return valor;
+}
+
+function mascaraRG(valor){
+    valor = valor.replace(/\D/g,'');
+    valor = valor.replace(/(\d{2})(\d)/,'$1.$2');
+    valor = valor.replace(/(\d{3})(\d)/,'$1.$2');
+    valor = valor.replace(/(\d{3})(\d{1})$/,'$1-$2');
+    return valor;
+}
+
+document.getElementById("m-cpf").addEventListener("input", function(e){
+    e.target.value = mascaraCPF(e.target.value);
+});
+
+document.getElementById("m-celular").addEventListener("input", function(e){
+    e.target.value = mascaraTelefone(e.target.value);
+});
+
+document.getElementById("m-rg").addEventListener("input", function(e){
+    e.target.value = mascaraRG(e.target.value);
+});
+
+function filtrarIgrejas() {
+    let filtro = document.getElementById("busca-igreja").value.toLowerCase();
+    let linhas = document.querySelectorAll("#tabela-igrejas tr");
+
+    linhas.forEach(l => {
+        let nome = l.cells[0].textContent.toLowerCase();
+        l.style.display = nome.includes(filtro) ? "" : "none";
+    });
+}
+
+document.getElementById("i-cep").addEventListener("blur", function(){
+
+    let cep = this.value.replace(/\D/g,'');
+
+    if(cep.length !== 8) return;
+
+    fetch(`https://viacep.com.br/ws/${cep}/json/`)
+    .then(r => r.json())
+    .then(d => {
+
+        if(d.erro) return;
+
+        document.getElementById("i-bairro").value = d.bairro || "";
+document.getElementById("i-endereco").value =
+    (d.logradouro || "") + ", " + (d.localidade || "");
+
+    })
+    .catch(() => {
+        console.log("Erro ao buscar CEP");
+    });
+
+});
+
+function mascaraCEP(valor){
+    valor = valor.replace(/\D/g,'');
+    valor = valor.replace(/(\d{5})(\d)/, '$1-$2');
+    return valor;
+}
+
+document.getElementById("i-tel-pastor").addEventListener("input", function(e){
+    e.target.value = mascaraTelefone(e.target.value);
+});
+
+document.getElementById("i-financeira-tel").addEventListener("input", function(e){
+    e.target.value = mascaraTelefone(e.target.value);
+});
+
+document.getElementById("i-cep").addEventListener("input", function(e){
+    e.target.value = mascaraCEP(e.target.value);
+});
+
+function atualizarAniversariantes(){
+
+    const meses = [
+        "Janeiro","Fevereiro","Março","Abril","Maio","Junho",
+        "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"
+    ];
+
+    let hoje = new Date();
+    let mesAtual = hoje.getMonth() + 1;
+
+    document.getElementById("titulo-aniversariantes").innerText =
+        "Aniversariantes de " + meses[mesAtual - 1];
+
+    let corpo = document.getElementById("tabela-aniversariantes");
+
+    if(!corpo) return;
+
+    corpo.innerHTML = "";
+
+    let lista = [];
+
+    dados.membros.forEach(m => {
+
+        if(!m.nasc) return;
+
+        let partes = m.nasc.split("-");
+
+        if(partes.length !== 3) return;
+
+        let ano = partes[0];
+        let mes = parseInt(partes[1]);
+        let dia = partes[2];
+
+        if(mes === mesAtual){
+            lista.push({
+                nome: m.nome,
+                dia: dia
+            });
+        }
+    });
+
+    lista.sort((a,b)=> parseInt(a.dia) - parseInt(b.dia));
+
+    if(lista.length === 0){
+        corpo.innerHTML =
+        `<tr><td colspan="2">Nenhum aniversariante este mês</td></tr>`;
+        return;
+    }
+
+    lista.forEach(m => {
+        corpo.innerHTML += `
+            <tr>
+                <td>${m.nome}</td>
+                <td>${m.dia}</td>
+            </tr>
+        `;
+    });
+}
+
+function gerarPDFMembros(){
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF();
+
+    const hoje = new Date();
+
+    const dataHora =
+        hoje.toLocaleDateString("pt-BR") + " " +
+        hoje.toLocaleTimeString("pt-BR");
+
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(16);
+    pdf.text("Membros IPDA Setorial Contagem", 105, 20, {
+        align: "center"
+    });
+
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(10);
+
+    let y = 35;
+
+    dados.membros.forEach((m, i) => {
+
+        let linha =
+            `${i+1}. ${m.nome} | ${m.celular || ""} | ${m.status || ""}`;
+
+        pdf.text(linha, 10, y);
+
+        y += 8;
+
+        if(y > 280){
+            pdf.setFontSize(8);
+            pdf.text(dataHora, 105, 290, {align:"center"});
+            pdf.addPage();
+            y = 20;
+            pdf.setFontSize(10);
+        }
+    });
+
+    pdf.setFontSize(8);
+    pdf.text(dataHora, 105, 290, {align:"center"});
+
+    pdf.save("membros-ipda-setorial-contagem.pdf");
+}
+
+// DARK MODE
+
+function alternarDarkMode(){
+
+    document.body.classList.toggle("dark");
+
+    let ativo = document.body.classList.contains("dark");
+
+    localStorage.setItem("darkMode", ativo);
+
+    atualizarTextoBotao();
+}
+
+function atualizarTextoBotao(){
+
+    let btn = document.getElementById("btn-dark");
+
+    if(!btn) return;
+
+    if(document.body.classList.contains("dark")){
+        btn.innerHTML = "☀️ Light Mode";
+    } else {
+        btn.innerHTML = "🌙 Dark Mode";
+    }
+}
+
+// carregar preferência salva
+window.addEventListener("load", () => {
+
+    let dark = localStorage.getItem("darkMode");
+
+    if(dark === "true"){
+        document.body.classList.add("dark");
+    }
+
+    atualizarTextoBotao();
+
+});
+
+function sair() {
+
+    auth.signOut().then(() => {
+        location.reload();
+    });
+
+}
+
+</script>
+
+<div id="loading" style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(255,255,255,0.85);
+z-index:9999;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+font-family:Arial;
+">
+<div class="spinner-bars">
+<span></span><span></span><span></span><span></span>
+<span></span><span></span><span></span><span></span>
+<span></span><span></span><span></span><span></span>
+</div>
+
+<div style="margin-top:15px;font-size:18px;font-weight:bold;color:#0d47a1;">
+Carregando...
+</div>
+
+</div>
+
+</body>
+</html>
