@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+<meta charset="UTF-8">
+<title>SETORIAL CONTAGEM_CONJUNTOS</title>
+
+<style>
+
+body{
+font-family: Arial;
+background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+margin:0;
+color:white;
+}
+
+.card{
+background:#1b1b1b;
+padding:40px;
+border-radius:12px;
+box-shadow:0 10px 30px rgba(0,0,0,0.5);
+text-align:center;
+width:340px;
+}
+
+input{
+width:80%;
+padding:10px;
+margin:8px;
+border-radius:6px;
+border:none;
+font-size:16px;
+}
+
+button{
+padding:10px 20px;
+font-size:16px;
+border:none;
+border-radius:6px;
+background:#3498db;
+color:white;
+cursor:pointer;
+}
+
+button:hover{
+background:#2980b9;
+}
+
+.codigo{
+margin-top:20px;
+font-size:32px;
+font-weight:bold;
+letter-spacing:3px;
+}
+
+.info{
+margin-top:10px;
+color:#bbb;
+}
+
+.timer{
+margin-top:15px;
+font-size:18px;
+}
+
+#painel{
+display:none;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="card">
+
+<div id="login">
+
+<h2>Login SETORIAL CONTAGEM_CONJUNTOS</h2>
+
+<input type="text" id="usuario" placeholder="Usuário">
+
+<input type="password" id="senha" placeholder="Senha">
+
+<br>
+
+<button onclick="entrar()">Entrar</button>
+
+<p id="erro"></p>
+
+</div>
+
+
+<div id="painel">
+
+<h2>SETORIAL CONTAGEM_CONJUNTOS</h2>
+
+<div class="info">
+IP: 192.168.1.1
+</div>
+
+<br>
+
+<label>Horas</label><br>
+<input type="number" id="horas" min="0" max="10" value="0">
+
+<br><br>
+
+<label>Minutos</label><br>
+<input type="number" id="minutos" min="0" max="59" value="0">
+
+<br><br>
+
+<button onclick="gerar()">Gerar senha</button>
+
+<div class="timer" id="timer"></div>
+
+<div class="info" id="dispositivos"></div>
+
+<div class="codigo" id="codigo"></div>
+
+</div>
+
+</div>
+
+<script>
+
+function entrar(){
+
+let usuario=document.getElementById("usuario").value;
+let senha=document.getElementById("senha").value;
+
+if(usuario==="admin" && senha==="admin"){
+
+document.getElementById("login").style.display="none";
+document.getElementById("painel").style.display="block";
+
+}
+
+else{
+
+document.getElementById("erro").innerText="Usuário ou senha incorretos";
+
+}
+
+}
+
+let intervalo;
+
+function gerar(){
+
+clearInterval(intervalo);
+
+let horas=parseInt(document.getElementById("horas").value)||0;
+let minutos=parseInt(document.getElementById("minutos").value)||0;
+
+let tempo=(horas*60)+minutos;
+
+document.getElementById("dispositivos").innerText="Dispositivos conectados: 1";
+
+function gerarCodigo(){
+
+if(horas==4 && minutos==21){
+
+return "83217460";
+
+}
+
+else{
+
+return Math.floor(10000000+Math.random()*90000000);
+
+}
+
+}
+
+document.getElementById("codigo").innerText=gerarCodigo();
+
+let totalSegundos=tempo*60;
+
+intervalo=setInterval(function(){
+
+totalSegundos--;
+
+let h=Math.floor(totalSegundos/3600);
+let m=Math.floor((totalSegundos%3600)/60);
+let s=totalSegundos%60;
+
+document.getElementById("timer").innerText="Tempo restante: "+h+"h "+m+"m "+s+"s";
+
+if(totalSegundos<=0){
+
+document.getElementById("codigo").innerText=gerarCodigo();
+totalSegundos=tempo*60;
+
+}
+
+},1000);
+
+}
+
+</script>
+
+</body>
+</html>
