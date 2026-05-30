@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lista de Presença</title>
+
+<style>
+
+/* MOBILE */
+
+
+.btn-voltar{
+    width:100%;
+    border:none;
+    background:white;
+    color:#0d47a1;
+    padding:12px;
+    border-radius:10px;
+    font-weight:bold;
+    margin-bottom:15px;
+}
+
+.btn-voltar:hover{
+    transform:translateY(-1px);
+}
+
+.card:hover{
+    background:#fafafa;
+}
+
+.topo{
+    margin-bottom:15px;
+
+    background:linear-gradient(135deg,#0d47a1,#1565c0);
+    color:white;
+    padding:18px;
+    border-radius:14px;
+    margin-bottom:15px;
+    box-shadow:0 2px 8px rgba(0,0,0,.15);
+ backdrop-filter:blur(5px);
+
+}
+
+.nome-membro{
+    font-size:16px;
+    font-weight:bold;
+    color:#222;
+    word-break:break-word;
+}
+
+.cabecalho-lista{
+    display:flex;
+    justify-content:space-between;
+    background:#0d47a1;
+    color:white;
+    padding:14px 16px;
+    border-radius:10px 10px 0 0;
+    font-weight:bold;
+    margin-top:10px;
+}
+
+.cabecalho-nome{
+    flex:1;
+}
+
+.cabecalho-status{
+    width:100px;
+    text-align:center;
+    font-size:13px;
+}
+
+.card:last-child{
+    border-bottom:none;
+}
+
+.card{
+    background:white;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:16px;
+    border-bottom:1px solid #ececec;
+    transition:.15s;
+}
+
+.status-membro{
+    flex-shrink:0;
+    width:130px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+}
+
+.status-membro small{
+    font-size:11px;
+    color:#666;
+    font-weight:bold;
+}
+
+    .card span{
+        font-size:16px;
+        font-weight:bold;
+        width:70%;
+        word-break:break-word;
+    }
+
+    .switch{
+    position:relative;
+    display:inline-block;
+    width:70px;
+    height:28px;
+}
+
+    .slider:before{
+        width:24px;
+        height:24px;
+    }
+
+    input:checked + .slider:before{
+        transform:translateX(42px);
+    }
+
+    .fechado{
+        font-size:16px;
+        padding:18px;
+    }
+
+body{
+    font-family:Arial,sans-serif;
+    background:#f3f5f8;
+    margin:0;
+    padding:10px;
+}
+
+.topo h2{
+    margin:10px 0 5px;
+    font-size:24px;
+}
+
+#data{
+    opacity:.9;
+}
+
+#status{
+    margin-bottom:10px;
+}
+
+input{
+    width:100%;
+    box-sizing:border-box;
+    padding:15px;
+    font-size:16px;
+    border-radius:12px;
+    border:1px solid #d8d8d8;
+    margin-bottom:15px;
+}
+
+#lista{
+    overflow:hidden;
+    border-radius:12px;
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+
+.switch input{
+    display:none;
+}
+
+.slider{
+    position:absolute;
+    inset:0;
+    background:#d32f2f;
+    border-radius:30px;
+    transition:.25s;
+}
+
+.slider:before{
+    content:"";
+    position:absolute;
+    width:24px;
+    height:24px;
+    left:3px;
+    top:3px;
+    background:white;
+    border-radius:50%;
+    transition:.25s;
+}
+
+input:checked + .slider{
+    background:#2e7d32;
+}
+
+input:checked + .slider:before{
+    transform:translateX(28px);
+}
+
+.fechado{
+    background:#c62828;
+    color:white;
+    padding:15px;
+    border-radius:10px;
+    text-align:center;
+    font-weight:bold;
+}
+
+</style>
+
+<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+
+</head>
+<body>
+<div class="topo">
+
+<button
+onclick="window.location.href='https://www.sitesetorialcontagem.com.br'"
+class="btn-voltar">
+
+← Voltar ao Site
+
+</button>
+
+    <h2 id="evento"></h2>
+    <div id="data"></div>
+
+</div>
+
+<input
+type="text"
+placeholder="🔍 Pesquisar membro..."
+id="pesquisa"
+onkeyup="filtrar()"
+autocomplete="off"
+>
+
+<div id="status"></div>
+
+<div id="lista"></div>
+
+<script>
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC5Ylv9RyBfZ3BN5IgDWGqrldQR9yIbFRA",
+  authDomain: "ipda-setorial-contagem.firebaseapp.com",
+  databaseURL: "https://ipda-setorial-contagem-default-rtdb.firebaseio.com",
+  projectId: "ipda-setorial-contagem",
+  storageBucket: "ipda-setorial-contagem.appspot.com",
+  messagingSenderId: "815344482867",
+  appId: "1:815344482867:web:221f5624f89c1e25468146"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.database();
+
+const params = new URLSearchParams(location.search);
+
+const id = params.get("id");
+
+db.ref("listaTempoReal/" + id).on("value", snapshot => {
+
+    let dados = snapshot.val();
+
+    if(!dados) return;
+
+if(!dados.publicada){
+
+    document.body.innerHTML = `
+    <div style="
+        height:100vh;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        font-family:Arial;
+        background:#f5f5f5;
+        padding:20px;
+        box-sizing:border-box;
+    ">
+
+        <div style="
+            background:white;
+            padding:40px;
+            border-radius:12px;
+            box-shadow:0 2px 10px rgba(0,0,0,0.1);
+            text-align:center;
+            max-width:400px;
+            width:100%;
+        ">
+
+            <h2 style="color:#0d47a1;">
+                Evento ainda não iniciado
+            </h2>
+
+            <p style="margin-top:10px;">
+                Aguarde até que o responsável publique a chamada.
+            </p>
+
+        </div>
+
+    </div>
+    `;
+
+    return;
+}
+
+
+if(dados.excluida){
+
+    document.body.innerHTML = `
+    <div style="
+        height:100vh;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        font-family:Arial;
+        background:#f5f5f5;
+    ">
+
+        <div style="
+            background:white;
+            padding:40px;
+            border-radius:12px;
+            box-shadow:0 2px 10px rgba(0,0,0,0.1);
+            text-align:center;
+        ">
+
+            <h2 style="color:#c62828;">
+                Chamada encerrada
+            </h2>
+
+            <p>
+                Esta lista não está mais disponível.
+            </p>
+
+        </div>
+
+    </div>
+    `;
+
+    return;
+}
+
+    document.getElementById("evento").innerText =
+        dados.evento;
+
+    document.getElementById("data").innerText =
+        dados.data;
+
+    if(dados.fechada){
+
+        document.getElementById("status").innerHTML =
+        `<div class="fechado">
+            Lista encerrada
+        </div>`;
+
+    } else {
+
+        document.getElementById("status").innerHTML = "";
+
+    }
+
+    let html = "";
+
+    Object.keys(dados.membros).forEach(chave => {
+
+    let membro = dados.membros[chave];
+
+    if(html === ""){
+
+html += `
+<div class="cabecalho-lista">
+
+    <div class="cabecalho-nome">
+        Nome
+    </div>
+
+    <div class="cabecalho-status">
+    Presença
+</div>
+
+</div>
+`;
+
+}
+
+html += `
+<div class="card membro-item">
+
+    <div class="nome-membro">
+        ${chave}
+    </div>
+
+    <div class="status-membro">
+    <small>
+        ${membro.presente ? "Presente" : "Ausente"}
+    </small>
+
+        <label class="switch">
+
+            <input
+                type="checkbox"
+                ${membro.presente ? "checked" : ""}
+                ${dados.fechada ? "disabled" : ""}
+                onchange="marcar('${chave}', this.checked)"
+            >
+
+            <span class="slider"></span>
+
+        </label>
+
+    </div>
+
+</div>
+`;
+});
+
+    document.getElementById("lista").innerHTML = html;
+
+});
+
+function marcar(nome, valor){
+
+    db.ref(
+        "listaTempoReal/" +
+        id +
+        "/membros/" +
+        nome +
+        "/presente"
+    ).set(valor);
+
+}
+
+function filtrar(){
+
+    let filtro =
+        document.getElementById("pesquisa")
+        .value.toLowerCase();
+
+    let itens =
+        document.querySelectorAll(".membro-item");
+
+    itens.forEach(item => {
+
+        let nome =
+            item.innerText.toLowerCase();
+
+        item.style.display =
+            nome.includes(filtro)
+            ? ""
+            : "none";
+
+    });
+
+}
+
+</script>
+
+</body>
+</html>
