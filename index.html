@@ -872,22 +872,27 @@ font-weight:bold;
     <div id="eventos-tela" class="tela" style="display:none">
         <button class="btn-add" onclick="abrirForm('eventos')">Adicionar Evento</button>
         <form class="formulario" id="formulario-eventos">
+<div class="campo-grupo">
+    <label>Nome do Evento</label>
+    <input id="e-nome">
+</div>
 
-    <input
-        placeholder="Nome do Evento"
-        id="e-nome">
-
-    <input
-        placeholder="Nome da Imagem (ex: congresso.jpg)"
+<div class="campo-grupo">
+    <label>Imagem</label>
+    <input 
+        placeholder="Nome da imagem (ex: congresso.jpg)"
         id="e-imagem">
+</div>
 
-    <input
-        type="date"
-        id="e-data">
+<div class="campo-grupo">
+    <label>Data</label>
+    <input type="date" id="e-data">
+</div>
 
-    <input
-        type="time"
-        id="e-hora">
+<div class="campo-grupo">
+    <label>Horário</label>
+    <input type="time" id="e-hora">
+</div>
 
     <button
         type="button"
@@ -899,7 +904,7 @@ font-weight:bold;
     </button>
 
 </form>
-        <table><thead><tr><th>Evento</th><th>Imagem</th><th>Data</th><th>Hora</th><th>Ação</th></tr></thead><tbody id="tabela-eventos"></tbody></table>
+        <table><thead><tr><th>Evento</th><th>Data</th><th>Hora</th><th>Ação</th></tr></thead><tbody id="tabela-eventos"></tbody></table>
     </div>
 
 <div id="aovivo-tela" class="tela" style="display:none">
@@ -1739,8 +1744,6 @@ if(tipo === "pedidosOracao"){
             onclick="editar('eventos', ${idx})">
             ${item.nome}
         </td>
-
-        <td>${item.imagem || ''}</td>
 
         <td>${item.data}</td>
 
